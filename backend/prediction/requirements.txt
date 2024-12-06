@@ -1,0 +1,6 @@
+croniter
+python-crontab
+numpy
+pandas
+prophet
+requests

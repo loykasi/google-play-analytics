@@ -1,0 +1,8 @@
+croniter
+python-crontab
+requests
+google-play-scraper
+feedparser
+pandas
+numpy
+Unidecode

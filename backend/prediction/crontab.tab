@@ -1,0 +1,2 @@
+2 0 * * * python3 /app/update_day_prediction.py > /proc/1/fd/1 2>/proc/1/fd/2
+2 * * * * python3 /app/update_hour_prediction.py > /proc/1/fd/1 2>/proc/1/fd/2

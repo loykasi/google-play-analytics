@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+websockets
+numpy
+pandas
+pydantic
+pydantic-settings
+SQLAlchemy
+PyMySQL
+cryptography

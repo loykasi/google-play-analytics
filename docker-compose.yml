@@ -1,0 +1,111 @@
+name: google_play_analysis
+services:
+  mysql:
+    container_name: mysql
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: googleplay/mysql:v1
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_DATABASE=google_play_store
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - TZ=Asia/Ho_Chi_Minh
+    volumes:
+      - mysql_db:/var/lib/mysql
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      
+  database_api:
+    build:
+      dockerfile: Dockerfile
+      context: ./database_api
+    image: googleplay/database_api:v1
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=rootpassword
+      - DATABASE_NAME=google_play_store
+      - TZ=Asia/Ho_Chi_Minh
+    networks:
+      - app_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    image: googleplay/frontend:v1
+    ports:
+      - "3000:80"
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - database_api
+    networks:
+      - app_network
+  
+  ingestion:
+    build:
+      dockerfile: Dockerfile
+      context: ./data_ingestion
+    image: googleplay/ingestion:v1
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - database_api
+    networks:
+      - app_network
+
+  backend_realtime:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/realtime
+    image: googleplay/backend_realtime:v1
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - database_api
+    networks:
+      - app_network
+
+  backend_prediction:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/prediction
+    image: googleplay/backend_prediction:v1
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - database_api
+    networks:
+      - app_network
+
+  backend_clustering:
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/clustering
+    image: googleplay/backend_clustering:v1
+    environment:
+      - TZ=Asia/Ho_Chi_Minh
+    depends_on:
+      - database_api
+    networks:
+      - app_network
+
+volumes:
+  mysql_db:
+
+networks:
+  app_network:
+    driver: bridge

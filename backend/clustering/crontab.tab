@@ -1,0 +1,2 @@
+2 * * * * python3 /app/genre_clustering.py > /proc/1/fd/1 2>/proc/1/fd/2
+2 * * * * python3 /app/category_clustering.py > /proc/1/fd/1 2>/proc/1/fd/2
